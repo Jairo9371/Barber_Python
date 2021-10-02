@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel = "stylesheet" type = "text/css" href="{% static 'css/estilo.css' %}" />
+    <link rel = "stylesheet" type = "text/css" href="{% static 'css/icon.css' %}" />
+    <script src="{% static 'js/menu.js' %}"></script>  
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link  rel = "icon"  type = "image / png"  tamaños = "32x32"  href = "{% static 'img/favicon-32x32.png' %}" >
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+    <title>Clientes</title>
+  </head>
+  <body>
+
+    {% include 'mensajes.html' %}
+
+    <h1>{{titulo}}</h1>
+    <div class="topnav" id="myTopnav">
+      <a href="/" class="active"><span class = "icon-home"></span>INICIO</a>
+      <a href="/clientes"><span class = "icon-users"></span>CLIENTES</a>
+      <a href="/barberos"><span class = "icon-hipster"></span>BARBEROS</a>
+      <a href="/tarifas"><span class = "icon-file-text"></span>TARIFAS</a>
+      <a href="/citas"><span class = "icon-profile"></span>CITAS</a>
+      <a href="/facturas"><span class = "icon-coin-dollar"></span>FACTURAS</a>
+      <a href="javascript:void(0);" class="icon" onclick="myFunction()">
+      <i class="fa fa-bars"></i></a>
+    </div><br>
+
+    <table class="table table-striped ">
+      <thead class="table table-info">
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Nombre</th>
+          <th scope="col">Apellido</th>
+          <th scope="col">Dirección</th>
+          <th scope="col">Teléfono</th>
+          <th scope="col">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in lista_clientes %}
+        <tr>
+          <th scope="row">{{forloop.counter}}</th>
+          <td>{{c.nombre}}</td>
+          <td>{{c.apellido}}</td>
+          <td>{{c.direccion}}</td>
+          <td>{{c.telefono}}</td>
+          <td>
+            <!-- modal Modificar-->
+            <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#modificar{{c.identificador}}">
+              Modificar
+            </button>
+            <!-- modal Eliminar-->
+            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#eliminar{{c.identificador}}">
+              Eliminar
+            </button>
+
+            <!-- Modal Modificar -->
+            <div class="modal fade" id="modificar{{c.identificador}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Modificar Cliente</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <form action="" method="POST">
+                      {% csrf_token %} 
+                      <div class="mb-3">
+                        <label for="nombre" class="form-label">Nombre</label>
+                        <input required value="{{c.nombre}}" type="text" class="form-control" id="nombre" name="nombre">
+                      </div>
+                      <div class="mb-3">
+                        <label for="apellido" class="form-label">Apellido</label>
+                        <input required value="{{c.apellido}}" type="text" class="form-control" id="apellido" name="apellido">
+                      </div>
+                      <div class="mb-3">
+                        <label for="direccion" class="form-label">Dirección</label>
+                        <input required value="{{c.direccion}}" type="text" class="form-control" id="direccion" name="direccion">
+                      </div>
+                      <div class="mb-3">
+                        <label for="telefono" class="form-label">Teléfono</label>
+                        <input required value="{{c.telefono}}" type="number" class="form-control" id="telefono" name="telefono">
+                      </div>
+                      <input  type="hidden" class="form-control"  name="modificar_cliente" value="modificar_cliente">
+                      <input  type="hidden" class="form-control"  name="identificador" value="{{c.identificador}}">
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                  </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Modal Eliminar -->
+            <div class="modal fade" id="eliminar{{c.identificador}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Eliminar Cliente</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+
+                    ¿Seguro que Desea Eliminar a <b>{{c.nombre}} {{c.apellido}}</b>?
+
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <form action="" method="POST">
+                      {% csrf_token %}
+                    <input type="hidden" name="eliminar_cliente" value="{{c.identificador}}">
+                    <button type="submit" class="btn btn-danger">Eliminar</button>
+                  </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </td>
+        </tr>
+        {%endfor%}
+      </tbody>
+    </table>
+  
+    <!-- Button trigger modal -->
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#añadirCliente">
+      Añadir Cliente
+    </button>
+
+    <!-- Modal -->
+    <div class="modal fade" id="añadirCliente" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Cliente</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form action="" method="POST">
+              {% csrf_token %}  
+              <div class="mb-3">
+                <label for="nombr" class="form-label">Nombre</label>
+                <input required type="text" class="form-control" id="nombre" name="nombre">
+              </div>
+              <div class="mb-3">
+                <label for="apellido" class="form-label">Apellido</label>
+                <input required type="text" class="form-control" id="apellido" name="apellido">
+              </div>
+              <div class="mb-3">
+                <label for="direccion" class="form-label">Dirección</label>
+                <input required type="text" class="form-control" id="direccion" name="direccion">
+              </div>
+              <div class="mb-3">
+                <label for="telefono" class="form-label">Teléfono</label>
+                <input required type="number" class="form-control" id="telefono" name="telefono">
+              </div>
+              <input  type="hidden" class="form-control"  name="añadir_cliente" value="añadir_cliente">
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            <button type="submit" class="btn btn-primary">Guardar</button>
+          </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+
+
+</body>
+</html>
